@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RANA BOSS</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+        body{background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;margin:0;}
+        .container{max-width:420px;width:100%;background:#1e293b;border-radius:20px;padding:28px 24px;box-shadow:0 8px 40px rgba(0,0,0,0.6);text-align:center;border:1px solid rgba(255,255,255,0.05);}
+        .logo{font-size:30px;font-weight:900;background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;}
+        .sub{color:#94a3b8;font-size:11px;letter-spacing:3px;margin:4px 0 18px;text-transform:uppercase;}
+        .device-box{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px;margin:12px 0;}
+        .device-box .label{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;}
+        .device-box .id{font-size:32px;font-weight:bold;color:#fbbf24;font-family:monospace;letter-spacing:6px;margin-top:4px;}
+        input{width:100%;padding:14px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:#fff;font-size:18px;text-align:center;margin:6px 0;font-family:monospace;letter-spacing:3px;}
+        input::placeholder{color:#64748b;font-size:14px;letter-spacing:0;}
+        .btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;margin:5px 0;transition:0.2s;}
+        .btn:active{transform:scale(0.97);}
+        .btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#0f172a;}
+        .btn-outline{background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.08);}
+        .status{margin:10px 0;font-size:14px;padding:6px;border-radius:8px;}
+        .status.error{color:#ef4444;background:rgba(239,68,68,0.08);}
+        .status.success{color:#22c55e;background:rgba(34,197,94,0.08);}
+        .status.waiting{color:#fbbf24;background:rgba(251,191,36,0.08);}
+        .hidden{display:none !important;}
+        .output-area{text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;padding-right:4px;}
+        .output-card{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px 14px;margin:5px 0;border-left:3px solid #22c55e;font-size:13px;}
+        .output-card.error{border-left-color:#ef4444;}
+        .output-card.waiting{border-left-color:#fbbf24;}
+        .footer{color:#475569;font-size:11px;margin-top:18px;border-top:1px solid rgba(255,255,255,0.05);padding-top:14px;}
+        .footer span{color:#fbbf24;}
+        .two-col{display:flex;gap:8px;}
+        .two-col .btn{flex:1;}
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;border:1px solid rgba(255,255,255,0.1);z-index:9999;animation:fadeUp 0.3s ease;}
+        @keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+        .badge{display:inline-block;background:rgba(34,197,94,0.15);color:#22c55e;padding:2px 12px;border-radius:20px;font-size:11px;font-weight:600;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">👑 RANA BOSS</div>
+    <div class="sub">⚡ POWERED BY GITHUB</div>
+
+    <!-- ===== অ্যাক্টিভেশন স্ক্রিন ===== -->
+    <div id="activationScreen">
+        <div class="device-box">
+            <div class="label">📱 Your Device ID</div>
+            <div class="id" id="deviceIdDisplay">------</div>
+        </div>
+        <input type="text" id="codeInput" placeholder="Enter 8-digit code" maxlength="8" inputmode="numeric">
+        <button class="btn btn-gold" onclick="activateDevice()">🔑 Activate Device</button>
+        <div class="status waiting" id="statusMsg">⚠️ Device NOT activated!</div>
+        <div class="two-col">
+            <button class="btn btn-outline" onclick="copyDeviceId()">📋 Copy ID</button>
+            <button class="btn btn-outline" onclick="checkStatus()">🔄 Check</button>
+        </div>
+        <div class="footer">📤 Send Device ID to admin</div>
+    </div>
+
+    <!-- ===== মূল টুল (অ্যাক্টিভ হলে) ===== -->
+    <div id="mainTool" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
+            <span><span class="badge">✅ Activated</span></span>
+            <span style="color:#94a3b8;font-size:11px;font-family:monospace;" id="deviceDisplay2"></span>
+        </div>
+        <input type="text" id="fbAccounts" placeholder="📧 Accounts (space separated)">
+        <input type="text" id="fbPassword" placeholder="🔑 Password (min 6)">
+        <button class="btn btn-gold" onclick="createAccounts()">🚀 Create Accounts</button>
+        <div id="output" class="output-area"></div>
+        <button class="btn btn-outline" onclick="logout()" style="margin-top:10px;">🚪 Logout</button>
+    </div>
+
+    <div class="footer"><span>RANA BOSS</span> • v2.0</div>
+</div>
+
+<script>
+    // ===== গিটহাব কনফিগ =====
+    const GITHUB_USER = "abalchodamanus-jpg";
+    const GITHUB_REPO = "rana-boss-tool";
+    const CONFIG_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/config.json`;
+
+    let deviceId = '';
+
+    function getDeviceId() {
+        if (window.AndroidBridge) {
+            return window.AndroidBridge.getDeviceId();
+        }
+        let id = localStorage.getItem('demo_device_id');
+        if (!id) { id = '3847291'; localStorage.setItem('demo_device_id', id); }
+        return id;
+    }
+
+    function showToast(msg, isError = false) {
+        let old = document.querySelector('.toast');
+        if (old) old.remove();
+        let t = document.createElement('div');
+        t.className = 'toast';
+        t.textContent = msg;
+        if (isError) t.style.borderColor = '#ef4444';
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    function checkStatus() {
+        deviceId = getDeviceId();
+        document.getElementById('deviceIdDisplay').textContent = deviceId;
+        document.getElementById('deviceDisplay2').textContent = '📱 ' + deviceId;
+
+        let activated = JSON.parse(localStorage.getItem('rana_activated') || '[]');
+        if (activated.includes(deviceId)) {
+            showMainApp();
+            return;
+        }
+
+        fetch(CONFIG_URL + '?t=' + Date.now())
+            .then(res => res.json())
+            .then(config => {
+                const codes = config.activation_codes || {};
+                if (codes[deviceId]) {
+                    let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
+                    if (!list.includes(deviceId)) {
+                        list.push(deviceId);
+                        localStorage.setItem('rana_activated', JSON.stringify(list));
+                    }
+                    showMainApp();
+                } else {
+                    showActivationScreen();
+                }
+            })
+            .catch(() => {
+                let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
+                if (list.includes(deviceId)) {
+                    showMainApp();
+                } else {
+                    showActivationScreen();
+                    document.getElementById('statusMsg').textContent = '⚠️ Internet required!';
+                    document.getElementById('statusMsg').className = 'status error';
+                }
+            });
+    }
+
+    function showMainApp() {
+        document.getElementById('activationScreen').classList.add('hidden');
+        document.getElementById('mainTool').classList.remove('hidden');
+        document.getElementById('statusMsg').className = 'status success';
+        document.getElementById('statusMsg').textContent = '✅ Device Activated!';
+    }
+
+    function showActivationScreen() {
+        document.getElementById('activationScreen').classList.remove('hidden');
+        document.getElementById('mainTool').classList.add('hidden');
+        document.getElementById('statusMsg').className = 'status waiting';
+        document.getElementById('statusMsg').textContent = '⚠️ Device NOT activated!';
+    }
+
+    function activateDevice() {
+        const code = document.getElementById('codeInput').value.trim();
+        if (code.length < 8) {
+            document.getElementById('statusMsg').textContent = '⚠️ Enter 8-digit code!';
+            document.getElementById('statusMsg').className = 'status error';
+            return;
+        }
+
+        deviceId = getDeviceId();
+        document.getElementById('statusMsg').textContent = '⏳ Checking...';
+        document.getElementById('statusMsg').className = 'status waiting';
+
+        fetch(CONFIG_URL + '?t=' + Date.now())
+            .then(res => res.json())
+            .then(config => {
+                const codes = config.activation_codes || {};
+                if (codes[deviceId] === code) {
+                    let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
+                    if (!list.includes(deviceId)) {
+                        list.push(deviceId);
+                        localStorage.setItem('rana_activated', JSON.stringify(list));
+                    }
+                    document.getElementById('statusMsg').textContent = '✅ Activated!';
+                    document.getElementById('statusMsg').className = 'status success';
+                    showToast('✅ Device Activated!');
+                    setTimeout(checkStatus, 800);
+                } else {
+                    document.getElementById('statusMsg').textContent = '❌ Invalid Code!';
+                    document.getElementById('statusMsg').className = 'status error';
+                    showToast('❌ Invalid Code!', true);
+                }
+            })
+            .catch(() => {
+                document.getElementById('statusMsg').textContent = '⚠️ Internet required!';
+                document.getElementById('statusMsg').className = 'status error';
+            });
+    }
+
+    function createAccounts() {
+        const accounts = document.getElementById('fbAccounts').value.trim();
+        const password = document.getElementById('fbPassword').value.trim();
+        const output = document.getElementById('output');
+
+        if (!accounts || password.length < 6) {
+            output.innerHTML = '<div class="output-card error">⚠️ Enter accounts & password (min 6)</div>';
+            return;
+        }
+
+        output.innerHTML = '<div class="output-card waiting">⏳ Processing...</div>';
+        const list = accounts.split(/\s+/);
+        const results = [];
+
+        list.forEach((acc, idx) => {
+            setTimeout(() => {
+                const uid = '1000' + String(Math.floor(Math.random() * 9000) + 1000) + String(idx).padStart(2, '0');
+                results.push({account: acc, uid: uid});
+                output.innerHTML = results.map(r => 
+                    `<div class="output-card">✅ ${r.account} → UID: ${r.uid}</div>`
+                ).join('');
+                if (idx === list.length - 1) showToast('✅ ' + list.length + ' accounts created!');
+            }, idx * 1500 + 500);
+        });
+    }
+
+    function copyDeviceId() {
+        const id = document.getElementById('deviceIdDisplay').textContent;
+        navigator.clipboard.writeText(id).then(() => {
+            document.getElementById('statusMsg').textContent = '✅ Copied!';
+            document.getElementById('statusMsg').className = 'status success';
+            showToast('📋 Device ID copied!');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = id;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            document.getElementById('statusMsg').textContent = '✅ Copied!';
+            document.getElementById('statusMsg').className = 'status success';
+        });
+    }
+
+    function logout() {
+        deviceId = getDeviceId();
+        let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
+        list = list.filter(id => id !== deviceId);
+        localStorage.setItem('rana_activated', JSON.stringify(list));
+        showToast('🚪 Logged out');
+        checkStatus();
+    }
+
+    setInterval(checkStatus, 30000);
+
+    window.onload = function() {
+        setTimeout(checkStatus, 300);
+        setTimeout(checkStatus, 1200);
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('codeInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') activateDevice();
+        });
+        document.getElementById('fbAccounts').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') document.getElementById('fbPassword').focus();
+        });
+        document.getElementById('fbPassword').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') createAccounts();
+        });
+    });
+</script>
+</body>
+  </html>
