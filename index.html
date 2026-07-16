@@ -19,24 +19,20 @@
         .btn:active{transform:scale(0.97);}
         .btn-gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#0f172a;}
         .btn-outline{background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.08);}
-        .btn-danger{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.2);}
         .status{margin:10px 0;font-size:14px;padding:6px;border-radius:8px;}
         .status.error{color:#ef4444;background:rgba(239,68,68,0.08);}
         .status.success{color:#22c55e;background:rgba(34,197,94,0.08);}
         .status.waiting{color:#fbbf24;background:rgba(251,191,36,0.08);}
         .hidden{display:none !important;}
         .output-area{text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;padding-right:4px;}
-        .output-area::-webkit-scrollbar{width:4px;}
-        .output-area::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px;}
-        .output-area::-webkit-scrollbar-thumb{background:#fbbf24;border-radius:10px;}
-        .output-card{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px 14px;margin:5px 0;border-left:3px solid #22c55e;font-size:13px;word-break:break-all;}
+        .output-card{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px 14px;margin:5px 0;border-left:3px solid #22c55e;font-size:13px;}
         .output-card.error{border-left-color:#ef4444;}
         .output-card.waiting{border-left-color:#fbbf24;}
         .footer{color:#475569;font-size:11px;margin-top:18px;border-top:1px solid rgba(255,255,255,0.05);padding-top:14px;}
         .footer span{color:#fbbf24;}
         .two-col{display:flex;gap:8px;}
         .two-col .btn{flex:1;}
-        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:9999;animation:fadeUp 0.3s ease;}
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;border:1px solid rgba(255,255,255,0.1);z-index:9999;animation:fadeUp 0.3s ease;}
         @keyframes fadeUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
         .badge{display:inline-block;background:rgba(34,197,94,0.15);color:#22c55e;padding:2px 12px;border-radius:20px;font-size:11px;font-weight:600;}
     </style>
@@ -45,7 +41,7 @@
 <div class="container">
     <div class="logo">👑 RANA BOSS</div>
     <div class="sub">⚡ POWERED BY GITHUB</div>
-    
+
     <!-- ===== অ্যাক্টিভেশন স্ক্রিন ===== -->
     <div id="activationScreen">
         <div class="device-box">
@@ -61,50 +57,40 @@
         </div>
         <div class="footer">📤 Send Device ID to admin</div>
     </div>
-    
+
     <!-- ===== মূল টুল (অ্যাক্টিভ হলে) ===== -->
     <div id="mainTool" class="hidden">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:6px;">
             <span><span class="badge">✅ Activated</span></span>
             <span style="color:#94a3b8;font-size:11px;font-family:monospace;" id="deviceDisplay2"></span>
         </div>
-        
         <input type="text" id="fbAccounts" placeholder="📧 Accounts (space separated)">
         <input type="text" id="fbPassword" placeholder="🔑 Password (min 6)">
-        
         <button class="btn btn-gold" onclick="createAccounts()">🚀 Create Accounts</button>
-        
         <div id="output" class="output-area"></div>
-        
         <button class="btn btn-outline" onclick="logout()" style="margin-top:10px;">🚪 Logout</button>
     </div>
-    
+
     <div class="footer"><span>RANA BOSS</span> • v2.0</div>
 </div>
 
 <script>
-    // ===== GitHub Raw Links =====
-    const GITHUB_USER = "YOUR_USERNAME";      // ← আপনার ইউজারনেম দিন
-    const GITHUB_REPO = "rana-boss";           // ← আপনার রেপো নাম দিন
+    // ===== গিটহাব কনফিগ =====
+    const GITHUB_USER = "abalchodamanus-jpg";
+    const GITHUB_REPO = "rana-boss-tool";
     const CONFIG_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/config.json`;
-    
+
     let deviceId = '';
-    
-    // ===== ডিভাইস আইডি (Android Bridge) =====
+
     function getDeviceId() {
         if (window.AndroidBridge) {
             return window.AndroidBridge.getDeviceId();
         }
-        // Web ডেমো
         let id = localStorage.getItem('demo_device_id');
-        if (!id) {
-            id = '3847291';
-            localStorage.setItem('demo_device_id', id);
-        }
+        if (!id) { id = '3847291'; localStorage.setItem('demo_device_id', id); }
         return id;
     }
-    
-    // ===== টোস্ট মেসেজ =====
+
     function showToast(msg, isError = false) {
         let old = document.querySelector('.toast');
         if (old) old.remove();
@@ -115,30 +101,23 @@
         document.body.appendChild(t);
         setTimeout(() => t.remove(), 3000);
     }
-    
-    // ===== স্ট্যাটাস চেক =====
+
     function checkStatus() {
         deviceId = getDeviceId();
         document.getElementById('deviceIdDisplay').textContent = deviceId;
         document.getElementById('deviceDisplay2').textContent = '📱 ' + deviceId;
-        
-        // লোকাল ক্যাশ চেক
+
         let activated = JSON.parse(localStorage.getItem('rana_activated') || '[]');
         if (activated.includes(deviceId)) {
             showMainApp();
             return;
         }
-        
-        // GitHub থেকে চেক
+
         fetch(CONFIG_URL + '?t=' + Date.now())
-            .then(res => {
-                if (!res.ok) throw new Error('Network error');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(config => {
                 const codes = config.activation_codes || {};
                 if (codes[deviceId]) {
-                    // লোকালে সেভ
                     let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
                     if (!list.includes(deviceId)) {
                         list.push(deviceId);
@@ -150,33 +129,31 @@
                 }
             })
             .catch(() => {
-                // অফলাইন: লোকাল চেক
                 let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
                 if (list.includes(deviceId)) {
                     showMainApp();
                 } else {
                     showActivationScreen();
-                    document.getElementById('statusMsg').textContent = '⚠️ Check internet connection';
+                    document.getElementById('statusMsg').textContent = '⚠️ Internet required!';
                     document.getElementById('statusMsg').className = 'status error';
                 }
             });
     }
-    
+
     function showMainApp() {
         document.getElementById('activationScreen').classList.add('hidden');
         document.getElementById('mainTool').classList.remove('hidden');
         document.getElementById('statusMsg').className = 'status success';
         document.getElementById('statusMsg').textContent = '✅ Device Activated!';
     }
-    
+
     function showActivationScreen() {
         document.getElementById('activationScreen').classList.remove('hidden');
         document.getElementById('mainTool').classList.add('hidden');
         document.getElementById('statusMsg').className = 'status waiting';
         document.getElementById('statusMsg').textContent = '⚠️ Device NOT activated!';
     }
-    
-    // ===== অ্যাক্টিভেট =====
+
     function activateDevice() {
         const code = document.getElementById('codeInput').value.trim();
         if (code.length < 8) {
@@ -184,16 +161,13 @@
             document.getElementById('statusMsg').className = 'status error';
             return;
         }
-        
+
         deviceId = getDeviceId();
         document.getElementById('statusMsg').textContent = '⏳ Checking...';
         document.getElementById('statusMsg').className = 'status waiting';
-        
+
         fetch(CONFIG_URL + '?t=' + Date.now())
-            .then(res => {
-                if (!res.ok) throw new Error('Network error');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(config => {
                 const codes = config.activation_codes || {};
                 if (codes[deviceId] === code) {
@@ -202,7 +176,7 @@
                         list.push(deviceId);
                         localStorage.setItem('rana_activated', JSON.stringify(list));
                     }
-                    document.getElementById('statusMsg').textContent = '✅ Activated! Loading...';
+                    document.getElementById('statusMsg').textContent = '✅ Activated!';
                     document.getElementById('statusMsg').className = 'status success';
                     showToast('✅ Device Activated!');
                     setTimeout(checkStatus, 800);
@@ -213,73 +187,55 @@
                 }
             })
             .catch(() => {
-                document.getElementById('statusMsg').textContent = '⚠️ Internet connection required!';
+                document.getElementById('statusMsg').textContent = '⚠️ Internet required!';
                 document.getElementById('statusMsg').className = 'status error';
-                showToast('⚠️ Check internet', true);
             });
     }
-    
-    // ===== অ্যাকাউন্ট ক্রিয়েট =====
+
     function createAccounts() {
         const accounts = document.getElementById('fbAccounts').value.trim();
         const password = document.getElementById('fbPassword').value.trim();
         const output = document.getElementById('output');
-        
+
         if (!accounts || password.length < 6) {
             output.innerHTML = '<div class="output-card error">⚠️ Enter accounts & password (min 6)</div>';
             return;
         }
-        
+
         output.innerHTML = '<div class="output-card waiting">⏳ Processing...</div>';
-        
         const list = accounts.split(/\s+/);
         const results = [];
-        
+
         list.forEach((acc, idx) => {
             setTimeout(() => {
-                // ডেমো ক্রিয়েট (আপনার আসল লজিক এখানে)
                 const uid = '1000' + String(Math.floor(Math.random() * 9000) + 1000) + String(idx).padStart(2, '0');
                 results.push({account: acc, uid: uid});
                 output.innerHTML = results.map(r => 
                     `<div class="output-card">✅ ${r.account} → UID: ${r.uid}</div>`
                 ).join('');
-                
-                if (idx === list.length - 1) {
-                    showToast('✅ ' + list.length + ' accounts created!');
-                }
+                if (idx === list.length - 1) showToast('✅ ' + list.length + ' accounts created!');
             }, idx * 1500 + 500);
         });
     }
-    
-    // ===== কপি =====
+
     function copyDeviceId() {
         const id = document.getElementById('deviceIdDisplay').textContent;
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(id).then(() => {
-                document.getElementById('statusMsg').textContent = '✅ Copied!';
-                document.getElementById('statusMsg').className = 'status success';
-                showToast('📋 Device ID copied!');
-            }).catch(() => fallbackCopy(id));
-        } else {
-            fallbackCopy(id);
-        }
+        navigator.clipboard.writeText(id).then(() => {
+            document.getElementById('statusMsg').textContent = '✅ Copied!';
+            document.getElementById('statusMsg').className = 'status success';
+            showToast('📋 Device ID copied!');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = id;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            document.getElementById('statusMsg').textContent = '✅ Copied!';
+            document.getElementById('statusMsg').className = 'status success';
+        });
     }
-    
-    function fallbackCopy(text) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        document.getElementById('statusMsg').textContent = '✅ Copied!';
-        document.getElementById('statusMsg').className = 'status success';
-        showToast('📋 Device ID copied!');
-    }
-    
-    // ===== লগআউট =====
+
     function logout() {
         deviceId = getDeviceId();
         let list = JSON.parse(localStorage.getItem('rana_activated') || '[]');
@@ -288,17 +244,14 @@
         showToast('🚪 Logged out');
         checkStatus();
     }
-    
-    // ===== অটো চেক (প্রতি ৩০ সেকেন্ড) =====
+
     setInterval(checkStatus, 30000);
-    
-    // ===== লোড =====
+
     window.onload = function() {
         setTimeout(checkStatus, 300);
         setTimeout(checkStatus, 1200);
     };
-    
-    // ===== Enter কী =====
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('codeInput').addEventListener('keyup', function(e) {
             if (e.key === 'Enter') activateDevice();
@@ -312,4 +265,4 @@
     });
 </script>
 </body>
-  </html>
+</html>
